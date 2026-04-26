@@ -1,0 +1,6 @@
+{
+  "name": "Swagger Subset Tool",
+  "description": "A tool to parse Swagger/OpenAPI JSON, select specific routes, and generate a subset JSON with dependencies intact.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
