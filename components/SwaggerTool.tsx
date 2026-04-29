@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { extractEndpoints, generateSubset, ParsedEndpoint } from '@/lib/swagger-utils';
-import { Check, Copy, Upload, ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { Check, Copy, Upload, ChevronDown, ChevronRight, Search, Download } from 'lucide-react';
 
 const METHOD_STYLES: Record<string, { bg: string, border: string, badge: string }> = {
   get: { bg: 'bg-[#ebf3fb]', border: 'border-[#61affe]', badge: 'bg-[#61affe]' },
@@ -387,6 +387,19 @@ export default function SwaggerTool() {
     }
   };
 
+  const handleDownload = () => {
+    if (!outputJson) return;
+    const blob = new Blob([outputJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'swagger-subset.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
       <header className="flex items-center justify-between px-4 py-2 border-b border-slate-200 bg-white shrink-0">
@@ -688,13 +701,23 @@ export default function SwaggerTool() {
                 <div className="flex items-center justify-between mb-2 shrink-0">
                     <h3 className="text-[10px] font-bold text-slate-500 uppercase">Output JSON</h3>
                     {outputJson && (
-                    <button
-                        onClick={copyToClipboard}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-bold"
-                    >
-                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        {copied ? 'Copied' : 'Copy'}
-                    </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                            onClick={copyToClipboard}
+                            className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-bold transition-colors"
+                        >
+                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                            {copied ? 'Copied' : 'Copy'}
+                        </button>
+                        <button
+                            onClick={handleDownload}
+                            className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-bold transition-colors"
+                            title="Download JSON"
+                        >
+                            <Download className="w-3 h-3" />
+                            Download
+                        </button>
+                      </div>
                     )}
                 </div>
 
