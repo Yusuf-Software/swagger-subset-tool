@@ -468,7 +468,7 @@ export default function SwaggerTool() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search paths, methods, summaries..."
+                  placeholder="Search paths, methods, summaries, or tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="block w-full pl-10 pr-3 py-1.5 border border-slate-200 rounded-md leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-xs transition-colors"
@@ -500,12 +500,35 @@ export default function SwaggerTool() {
                     <div key={tag} className="mb-8 last:mb-0">
                       <div 
                         className="flex items-center justify-between cursor-pointer select-none group mb-2"
-                        onClick={() => toggleTag(tag)}
                       >
-                        <h3 className="text-[22px] font-bold text-gray-800 capitalize group-hover:text-gray-600 transition-colors">
-                          {tag === 'default' ? 'Uncategorized' : tag}
-                        </h3>
-                        <div className="text-gray-500">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={methods.every(ep => selectedPaths.has(`${ep.path}|${ep.method}`))}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              const nextSet = new Set(selectedPaths);
+                              const isChecked = e.target.checked;
+                              methods.forEach(ep => {
+                                const id = `${ep.path}|${ep.method}`;
+                                if (isChecked) nextSet.add(id);
+                                else nextSet.delete(id);
+                              });
+                              setSelectedPaths(nextSet);
+                            }}
+                            className="w-5 h-5 rounded text-indigo-600 border-gray-300 pointer-events-auto cursor-pointer"
+                          />
+                          <h3 
+                            className="text-[22px] font-bold text-gray-800 capitalize group-hover:text-gray-600 transition-colors"
+                            onClick={() => toggleTag(tag)}
+                          >
+                            {tag === 'default' ? 'Uncategorized' : tag}
+                          </h3>
+                        </div>
+                        <div 
+                          className="text-gray-500"
+                          onClick={() => toggleTag(tag)}
+                        >
                           {collapsedTags.has(tag) ? <ChevronRight className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
                         </div>
                       </div>
@@ -751,9 +774,7 @@ export default function SwaggerTool() {
           {outputJson && <span className="text-slate-500 font-mono">Output size: {(new Blob([outputJson]).size / 1024).toFixed(1)} KB</span>}
         </div>
         <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-white transition-colors">Home</a>
-            <a href="#" className="hover:text-white transition-colors">About</a>
-            <a href="#" className="hover:text-white transition-colors">GitHub</a>
+            <a href="https://github.com/Yusuf-Software/swagger-subset-tool" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
         </div>
       </footer>
     </div>
